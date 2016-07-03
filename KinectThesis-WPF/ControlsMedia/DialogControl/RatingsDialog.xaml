@@ -1,0 +1,26 @@
+﻿<Window x:Class="ControlsMedia.DialogControl.RatingsDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ControlsMedia.DialogControl"
+        mc:Ignorable="d"
+        xmlns:k="http://schemas.microsoft.com/kinect/2014"
+        Title="Saving your score"
+        Width="800"
+        Height="400">
+    <k:KinectRegion x:Name="kinectRegion">
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="80" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <TextBlock Text="Do you want to save this rating?"  HorizontalAlignment="Center" />
+
+            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                <Button Margin="50" Content="Yes" IsDefault="True" Click="ButtonOkClick" Style="{StaticResource StackedButtonStyle}" />
+                <Button Margin="50" Content="No" IsCancel="True" Style="{StaticResource StackedButtonStyle}" />
+            </StackPanel>
+        </Grid>
+    </k:KinectRegion>
+</Window>

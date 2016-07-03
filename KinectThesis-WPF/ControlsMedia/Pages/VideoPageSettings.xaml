@@ -1,0 +1,65 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.ControlsBasics.VideoPageSettings"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Microsoft.Samples.Kinect.ControlsBasics"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <!-- Page title -->
+        <TextBlock x:Name="pageTitle" Text="Video settings" Margin="0 10 0 10" />
+        <Grid Grid.Row="1" VerticalAlignment="Center" Margin="10,0,-10,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <StackPanel HorizontalAlignment="Center" Margin="0,0,0,100">
+                <TextBlock Style="{StaticResource HeaderStyle}">Mute video</TextBlock>
+                <RadioButton Name="muteOn" Content="On &#x0a;(Kinect will listen better)"
+                             Style="{StaticResource RadioButtonStyle}"
+                             GroupName="MuteVideo" />
+                <RadioButton Name="muteOff"
+                         Content="off"
+                             GroupName="MuteVideo"
+                             Style="{StaticResource RadioButtonStyle}"
+                                   IsChecked="True" />
+            </StackPanel>
+            <StackPanel Grid.Column="1" HorizontalAlignment="Center" Margin="0,0,0,100">
+                <TextBlock Style="{StaticResource HeaderStyle}">Scroll Gestures</TextBlock>
+                <RadioButton Name="handGesturesOn" Content="On"
+                             Style="{StaticResource RadioButtonStyle}"
+
+                             GroupName="handGestures" />
+                <RadioButton Name="handGesturesOff" Content="Off"
+                             GroupName="handGestures"
+                             Style="{StaticResource RadioButtonStyle}" />
+            </StackPanel>
+            <StackPanel Grid.Column="2" HorizontalAlignment="Center" Margin="0,0,0,100">
+                <TextBlock Style="{StaticResource HeaderStyle}">Hand Tracking</TextBlock>
+                <RadioButton Name="handTrackLeft" Content="Left"
+                             Style="{StaticResource RadioButtonStyle}"
+
+                             GroupName="handTrack" />
+                <RadioButton Name="handTrackRight" Content="Right"
+                             GroupName="handTrack"
+                             Style="{StaticResource RadioButtonStyle}" />
+                <RadioButton Name="handTrackBoth" Content="Both"
+                             GroupName="handTrack"
+                             Style="{StaticResource RadioButtonStyle}"
+                              IsChecked="True" />
+            </StackPanel>
+            <TextBlock VerticalAlignment="Bottom" Grid.ColumnSpan="2" HorizontalAlignment="Center"
+                       FontSize="40" FontStyle="Italic">
+                [Setting will apply after navigation away]
+            </TextBlock>
+        </Grid>
+    </Grid>
+</UserControl>

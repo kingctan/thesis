@@ -1,0 +1,46 @@
+﻿<UserControl x:Class="Microsoft.Samples.Kinect.ControlsBasics.VideoControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:Microsoft.Samples.Kinect.ControlsBasics"
+             xmlns:ControlsBasics="clr-namespace:Microsoft.Samples.Kinect.ControlsBasics"
+             xmlns:Utils="clr-namespace:Utils;assembly=Utils"
+             mc:Ignorable="d"
+             d:DesignHeight="300" d:DesignWidth="300">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+        <Utils:ElementManipulation x:Name="videoPlayerElementManipulation" HorizontalAlignment="Center">
+            <Utils:ElementPressing x:Name="videoPlayerElementPressing">
+                <MediaElement x:Name="videoPlayer" MediaOpened="media_MediaOpened" Volume="0.05" Loaded="videoPlayer_Loaded" UnloadedBehavior="Pause" PreviewMouseWheel="videoPlayer_PreviewMouseWheel" PreviewMouseLeftButtonDown="videoPlayer_PreviewMouseLeftButtonDown"    ScrubbingEnabled="True"  LoadedBehavior="Manual"  PreviewMouseMove="videoPlayer_PreviewMouseMove" />
+            </Utils:ElementPressing>
+        </Utils:ElementManipulation>
+        <Grid Grid.Row="1" x:Name="videoControls" Visibility="Hidden"  HorizontalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+            <StackPanel x:Name="buttons"  Orientation="Horizontal"   VerticalAlignment="Top">
+                <Button Foreground="{StaticResource SpeechBrush}"  Margin="7" Content="{Binding PlayButtonContent}" Style="{StaticResource StackedButtonStyle}" Click="PlayButton_Click" />
+                <Button Foreground="{StaticResource SpeechBrush}"  Margin="7"  Content="Rewind" Style="{StaticResource StackedButtonStyle}" Click="RewindButton_Click" />
+                <Button Foreground="{StaticResource SpeechBrush}"  Margin="7"  Content="Fast Forward" Style="{StaticResource StackedButtonStyle}" Click="FastForwardButton_Click" />
+                <Button Foreground="{StaticResource SpeechBrush}" Margin="7"  Content="Stop" Style="{StaticResource StackedButtonStyle}" Click="StopButton_Click" />
+            </StackPanel>
+            <Grid Grid.Row="1" HorizontalAlignment="Left">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="120" />
+                </Grid.ColumnDefinitions>
+                <Grid.Resources>
+                    <Utils:PercentConverter x:Key="floatToPercent" />
+                </Grid.Resources>
+                <Slider x:Name="slider" MouseLeftButtonUp="timeSlider_MouseLeftButtonUp"  Orientation="Horizontal" Width="750" Margin="15,0,15,0" />
+                <ProgressBar  x:Name="pbVolume" Grid.Column="2" Width="120"  Height="15" Maximum="1" Value="{Binding ElementName=videoPlayer, Path=Volume}" VerticalAlignment="Center" />
+                <TextBlock Grid.Column="2" Text="{Binding ElementName=pbVolume, Converter={StaticResource floatToPercent} ,Path=Value, StringFormat={}Volume: {0:0}%}" FontSize="12" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

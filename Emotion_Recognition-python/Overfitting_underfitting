@@ -1,0 +1,208 @@
+#Over-fit = high-variance = Increasing the complexity of the model too much will result in a fit that is no longer
+#reflecting the true undelying distribution. It is more sensitive to the noise of the training data.
+
+#The bias of an estimator is its average error for different training sets.
+# The variance of an estimator indicates how sensitive it is to varying training sets.
+# Noise is a property of the data.
+
+
+#1)
+# Learning Curves are a plot of the validation score and training score as a function of Number of training samples.
+# The score I use is accuracy but it can also be mean-squared-error.
+
+
+#A) Rules: Accuracy (the higher the better)
+#Learning curve
+# Overfitting
+# 1) more data until test curve is flat (slope test curve on the right)
+# 2) get rid of noise by feature selection or regularization
+#               example l1 penalized linear model
+#               Higher regualarization:
+#               SVM: smaller C
+#               Penalized lineair models: larger alpha
+#               Tree based: Shallower trees (decision stumps) less samples per leaf
+#3) Simpeler model families like penalized lineair models (Lineair SVM, Logisitic regression, Naive Bayes)
+#4)Ensemble strategie averaging independently trained models
+# Under-fitting a little
+# 1)training curve is not 100% flat -> make the model complex , estimator doesn't learn the data perfectly
+# 2) Give more learning freedom
+#               SVM: Higher  C
+#               Penalized lineair models: smaller alpha
+#               Tree based: Deeper trees (decision stumps) more samples per leaf
+#3) Complex models
+# Complex model families (NON-Lineair SVM,Ensemble of Decision trees,..)
+#4) Construct new features
+
+# Note: Over-fitting and little under-fitting:  go to simpler model or increase the regularisation parameters
+
+
+
+#B) Rules:Mean-squared error (the lower the score the better)
+# When the curves are close, it indicates underfitting, and adding more data will not generally improve the estimator.
+#   ->few difference between the testing data and training data score: the training error will never increase, and the testing error will never decrease with more data points
+#   ->you want a better validation score add more complexity
+# when the curves are far apart, it indicates overfitting, and adding more data may increase the effectiveness of the model.
+#   ->larger nr of trainingsdata training and testing error wil converge
+
+#2)
+# Validation Curves are a plot of validation score and training score as a function of model complexity:
+# when the two curves are close, it indicates underfitting
+#   ->doesn't have enough complexity to represent the data
+# when the two curves are separated, it indicates overfitting, trainingscore is good but validation score is not good
+#   ->when the training and validation score diverge,  it has so much flexibility, that it fits the noise rather than the underlying trend
+# the "sweet spot" is in the middle
+# Note: The training score (nearly) always improves with model complexity. This is because a more complicated model can fit th noise better.
+# Note: if we optimized the hyperparameters based on a validation score, the validation score
+# is biased (errors made because of the training made assumptions on the training dataset) and not a good estimate of the generalization any longer.
+# To get a proper estimate of the generalization we have to compute the score on another test set, this is the reason of k-fold cross validation.
+
+
+
+from __future__ import print_function, division
+
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.svm import SVC
+from sklearn.learning_curve import learning_curve
+import seaborn as sns; sns.set()
+from sklearn import svm
+from sklearn import preprocessing
+from sklearn.learning_curve import validation_curve
+from sklearn.neighbors import KNeighborsClassifier
+from pandas import concat, read_csv
+import os
+from sklearn.externals import joblib
+
+feature_cols = ["JawOpen","JawSlideRight","LeftcheekPuff","LefteyebrowLowerer","LefteyeClosed","RighteyebrowLowerer","RighteyeClosed","LipCornerDepressorLeft","LipCornerDepressorRight","LipCornerPullerLeft","LipCornerPullerRight","LipPucker","LipStretcherLeft","LipStretcherRight","LowerlipDepressorLeft","LowerlipDepressorRight","RightcheekPuff"]
+
+
+dir = os.path.dirname(__file__)
+data = joblib.load(os.path.join(dir,'dataset.pkl'))
+X = data[feature_cols]
+y=data.status
+
+# 1) Detecting Data Sufficiency with Learning Curves
+
+#linspace creates lineair points between intervals
+def plot_learning_curve(estimator, title,X,Y,  ylim=None, cv=None,
+                        n_jobs=1, train_sizes=np.linspace(.5, 1.0,5)):
+    """
+    Generate a simple plot of the test and traning learning curve.
+
+    Parameters
+    ----------
+    estimator : object type that implements the "fit" and "predict" methods
+        An object of that type which is cloned for each validation.
+
+    title : string
+        Title for the chart.
+
+    X : array-like, shape (n_samples, n_features)
+        Training vector, where n_samples is the number of samples and
+        n_features is the number of features.
+
+    y : array-like, shape (n_samples) or (n_samples, n_features), optional
+        Target relative to X for classification or regression;
+        None for unsupervised learning.
+
+    ylim : tuple, shape (ymin, ymax), optional
+        Defines minimum and maximum yvalues plotted.
+
+    cv : integer, cross-validation generator, optional
+        If an integer is passed, it is the number of folds (defaults to 3).
+        Specific cross-validation objects can be passed, see
+        sklearn.cross_validation module for the list of possible objects
+
+    n_jobs : integer, optional
+        Number of jobs to run in parallel (default 1).
+    train_sizes: Relative or absolute numbers of training examples that will be used to generate the learning curve.
+    """
+    plt.figure()
+    plt.title(title)
+    if ylim is not None:
+        plt.ylim(*ylim)
+    plt.xlabel("Training examples")
+    plt.ylabel("Score")
+    train_sizes, train_scores, test_scores = learning_curve(
+        estimator, X, y, cv=cv, n_jobs=n_jobs, train_sizes=train_sizes)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+    plt.grid()
+
+    plt.fill_between(train_sizes, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.1,
+                     color="r")
+    plt.fill_between(train_sizes, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.1, color="g")
+    plt.plot(train_sizes, train_scores_mean, 'o-', color="r",
+             label="Training score")
+    plt.plot(train_sizes, test_scores_mean, 'o-', color="g",
+             label="Cross-validation score")
+    plt.legend(loc="best")
+    fig = plt.gcf()
+    ''' local directory
+        fig.savefig('C:/Users/Miguel/Desktop/graph_emotions/'+title+'.png')
+    '''
+    fig.savefig(title+'.png')
+    plt.show()
+
+
+
+#  2) Detecting Over-fitting with Validation Curves
+def plot_validation_curve(estimator,title,parameter_name , range):
+    train_scores, test_scores = validation_curve(
+        estimator, X, y, param_name=parameter_name, param_range=range,
+        cv=10, scoring="accuracy", n_jobs=1)
+    train_scores_mean = np.mean(train_scores, axis=1)
+    train_scores_std = np.std(train_scores, axis=1)
+    test_scores_mean = np.mean(test_scores, axis=1)
+    test_scores_std = np.std(test_scores, axis=1)
+
+    plt.title(title)
+    plt.xlabel(parameter_name)
+    plt.ylabel("Score")
+    plt.ylim(0.0, 1.1)
+    plt.semilogx(range, train_scores_mean, label="Training score", color="r")
+    plt.fill_between(range, train_scores_mean - train_scores_std,
+                     train_scores_mean + train_scores_std, alpha=0.2, color="r")
+    plt.semilogx(range, test_scores_mean, label="Cross-validation score",
+                 color="g")
+    plt.fill_between(range, test_scores_mean - test_scores_std,
+                     test_scores_mean + test_scores_std, alpha=0.2, color="g")
+    plt.legend(loc="best")
+    fig = plt.gcf()
+    ''' local directory
+    fig.savefig('C:/Users/Miguel/Desktop/graph_emotions/'+title+'.png')
+    '''
+    fig.savefig(title+'.png')
+    plt.show()
+
+#KNN
+def KNN_plot_curves():
+    neighbor_range = list(range(2, 31))
+    KNN = KNeighborsClassifier(weights='distance')
+    plot_learning_curve(KNeighborsClassifier(n_neighbors=4, weights='distance'), "KNN_Learning_Curves", X,y, cv=5)
+    plot_validation_curve(KNN,"KNN_Validation_Curves","n_neighbors",neighbor_range)
+
+#SVC
+def SVC_gamma_plot_curves():
+    gamma_range = np.logspace(-4, 1, 5)
+    plot_learning_curve(svm.SVC(gamma=0.56234132519034907 ,C=10), "SVC_Learning_Curves", X,y,  cv=5)
+    plot_validation_curve(svm.SVC(C=10),"SVC_Validation_Curves","gamma",gamma_range)
+
+def SVC_C_plot_curves():
+    C_range = np.logspace(-1, 2, 4)
+    plot_learning_curve(svm.SVC(gamma=0.56234132519034907 ,C=10), "SVC_Learning_Curves", X,y,  cv=5)
+    plot_validation_curve(svm.SVC(gamma=0.56234132519034907),"SVC_Validation_Curves","C",C_range)
+
+#LIN_SVC
+def LinSvc_plot_curves():
+    LinSVC = svm.LinearSVC(C=1)
+    plot_learning_curve(LinSVC, "Lineair_SVC_Learning_Curves",X,y, cv=5)
+
+KNN_plot_curves()
+SVC_gamma_plot_curves()
+SVC_C_plot_curves()
+LinSvc_plot_curves()

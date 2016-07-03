@@ -1,0 +1,52 @@
+from __future__ import print_function, division
+# use seaborn plotting style defaults
+from sklearn import preprocessing
+import seaborn as sns; sns.set()
+import pandas as pd
+from sklearn.cross_validation import cross_val_score
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.externals import joblib
+from pandas import concat, read_csv
+from sklearn import svm
+import os
+from sklearn.externals import joblib
+
+feature_cols = ["JawOpen","JawSlideRight","LeftcheekPuff","LefteyebrowLowerer","LefteyeClosed","RighteyebrowLowerer","RighteyeClosed","LipCornerDepressorLeft","LipCornerDepressorRight","LipCornerPullerLeft","LipCornerPullerRight","LipPucker","LipStretcherLeft","LipStretcherRight","LowerlipDepressorLeft","LowerlipDepressorRight","RightcheekPuff"]
+dir = os.path.dirname(__file__)
+data = joblib.load(os.path.join(dir,'dataset.pkl'))
+X = data[feature_cols]
+y=data.status
+
+local_flask_dir ='C:\\Users\\Miguel\\OneDrive\\Documenten\\Thesis\\Flask\\'
+
+def create_KNN():
+    knn = KNeighborsClassifier(n_neighbors=4 , weights='distance')
+    knn.fit(X,y)
+    joblib.dump(knn, 'KNN_emotionrecognition.pkl')
+    ''' local directory
+    joblib.dump(knn, local_flask_dir+'KNN_emotionrecognition.pkl')
+    '''
+def create_SVC():
+    SVC = svm.SVC(C=10, gamma=0.56234132519034907 , probability=True)
+    SVC.fit(X,y)
+    joblib.dump(SVC, 'SVC_emotionrecognition.pkl')
+    ''' local directory
+    joblib.dump(SVC, local_flask_dir+'SVC_emotionrecognition.pkl')
+    '''
+def create_Lin_SVC():
+    LinSVC = svm.LinearSVC(C=1)
+    LinSVC.fit(X,y)
+    joblib.dump(LinSVC, 'LIN_SVC_emotionrecognition.pkl')
+    ''' local directory
+    joblib.dump(LinSVC, local_flask_dir+'LIN_SVC_emotionrecognition.pkl')
+    '''
+def create_Random_Forest():
+    rf = DecisionTreeClassifier(max_depth=11)
+    rf.fit(X,y)
+    joblib.dump(rf, 'DTREE_emotionrecognition.pkl')
+    ''' local directory
+    joblib.dump(rf, local_flask_dir+'DTREE_emotionrecognition.pkl')
+    '''
+create_SVC()
+#create_KNN()
